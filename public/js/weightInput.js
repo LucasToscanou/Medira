@@ -1,44 +1,39 @@
+import { createActionBtn } from "./editBtns.js";
 export class weightInput {
-    constructor(firstWeighHistoryValue) {
-        // this.setInputDefault(firstWeighHistoryValue.weight);
-        this.final_div = this.setup();
+    constructor(latestWeighHistoryValue) {
+        this.final_div = this.setup(latestWeighHistoryValue);
     }
-    setup() {
+    setup(default_weight) {
         const div = document.createElement("div");
-        const weight_input = document.createElement("input");
-        const save_btn = this.createButton("save", () => this.addNewWeight(weight_input.value));
-        const inc_btn = this.createButton("+0.10", () => this.incNewWeightInput(0.1));
-        const dec_btn = this.createButton("-0.10", () => this.incNewWeightInput(-0.1));
-        weight_input.id = "weigth-input";
-        weight_input.type = "number";
-        weight_input.min = "0";
-        div.appendChild(weight_input);
-        div.appendChild(save_btn);
+        const input_field = document.createElement("input");
+        const save_btn = createActionBtn("save", "weight-input-save", () => this.addNewWeight(input_field.value));
+        const inc_btn = createActionBtn("+0.10", "weight-input-inc", () => this.incWeightInput(0.1));
+        const dec_btn = createActionBtn("-0.10", "weight-input-dec", () => this.incWeightInput(-0.1));
+        input_field.id = "weight-input";
+        input_field.type = "number";
+        input_field.min = "0";
+        input_field.value = default_weight.weight.toFixed(2);
+        div.appendChild(input_field);
         div.appendChild(inc_btn);
         div.appendChild(dec_btn);
+        div.appendChild(save_btn);
         return div;
     }
-    createButton(text, onClickfunc) {
-        const btn = document.createElement("button");
-        btn.id = `weight-input-${text}-btn`;
-        btn.textContent = text;
-        btn.onclick = onClickfunc;
-        return btn;
-    }
-    addNewWeight(id) {
-        const new_weight = document.getElementById("weight_input");
-        if (new_weight) {
-            console.log(new_weight.value.toString());
+    addNewWeight(weightValue) {
+        const weight = parseFloat(weightValue);
+        if (!isNaN(weight)) {
+            const newRecord = { weight, date: new Date() };
+            // Dispatch a custom event with the new weight record
+            const event = new CustomEvent("newWeightAdded", { detail: newRecord });
+            window.dispatchEvent(event);
+            console.log(`Dispatched event for new weight: ${weight}`);
+        }
+        else {
+            console.error("Invalid weight value");
         }
     }
-    setInputDefault(initial_weight) {
-        const weight = document.getElementById("weight_input");
-        if (weight) {
-            weight.value = initial_weight.toFixed(2);
-        }
-    }
-    incNewWeightInput(delta) {
-        const weight = document.getElementById("weight_input");
+    incWeightInput(delta) {
+        const weight = document.getElementById("weight-input");
         if (weight) {
             const old_weight = Number(weight.value);
             weight.value = (old_weight + delta).toFixed(2);

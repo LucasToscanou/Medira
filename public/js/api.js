@@ -5,3 +5,17 @@ export function generateFloatArray(size, min, max) {
     }));
 }
 ;
+export function addRecord(record) {
+    console.log(`API: addRecord ${record}`);
+}
+export function dropRecord(record) {
+    console.log(`API: dropRecord ${record}`);
+}
+export function updateRecord(id, weight, date) {
+    if (weight || date) {
+        console.log(`API: updateRecord ${id.toFixed(0)}`);
+    }
+    else {
+        console.log(`API error: updateRecord ${id.toFixed(0)} didn't get atributes to update`);
+    }
+}
