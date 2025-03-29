@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { WeightTable } from './weightTable.js';
 import { weightInput } from './weightInput.js';
-import { fetchRecords, addRecord } from "./api.js";
+import { fetchRecords, addRecord, dropRecord, updateRecord } from "./api.js";
 class Main {
     constructor() {
         this.body = document.getElementsByTagName("body")[0];
@@ -35,6 +35,16 @@ class Main {
         }));
         window.addEventListener("refreshTable", (event) => __awaiter(this, void 0, void 0, function* () {
             yield this.refreshTable();
+        }));
+        window.addEventListener("deleteWeightRecord", (event) => __awaiter(this, void 0, void 0, function* () {
+            const customEvent = event;
+            console.log(customEvent.detail);
+            yield dropRecord(customEvent.detail);
+        }));
+        window.addEventListener("updateWeightRecord", (event) => __awaiter(this, void 0, void 0, function* () {
+            const customEvent = event;
+            console.log(customEvent.detail);
+            yield updateRecord(customEvent.detail['id'], customEvent.detail['new_weight']);
         }));
     }
     createWeightInput() {

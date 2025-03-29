@@ -35,6 +35,20 @@ class Main {
         window.addEventListener("refreshTable", async (event: Event) => {
             await this.refreshTable();
         });
+
+        window.addEventListener("deleteWeightRecord", async (event: Event) => {
+            const customEvent = event as CustomEvent;
+
+            console.log(customEvent.detail);
+            await dropRecord(customEvent.detail);
+        })
+
+        window.addEventListener("updateWeightRecord", async (event: Event) => {
+            const customEvent = event as CustomEvent;
+
+            console.log(customEvent.detail);
+            await updateRecord(customEvent.detail['id'], customEvent.detail['new_weight']);
+        })
     }
 
     private createWeightInput() {
@@ -54,7 +68,6 @@ class Main {
         }
     }
 
-
     private async refreshTable(){
         await this.getWeighHistoryData();
         
@@ -63,7 +76,6 @@ class Main {
             this.tableContainer.replaceChild(new_weightHistoryTable.table, this.tableContainer.firstChild);
         }
     }
-
 
     private async getWeighHistoryData() {
         this.weightHistoryData = await fetchRecords();

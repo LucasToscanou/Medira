@@ -69,7 +69,7 @@ export class WeightTable {
             input_field.classList.add("input-editing");
             const inc_btn = createActionBtn("+0.1", "inc-action-btn-editing", () => this.incrementRowWeight(row_id, 0.1));
             const dec_btn = createActionBtn("-0.1", "dec-action-btn-editing", () => this.incrementRowWeight(row_id, -0.1));
-            const save_btn = createActionBtn("Save", "save-action-btn-editing", () => this.saveEditedWeight(row_id, 0.1));
+            const save_btn = createActionBtn("Save", "save-action-btn-editing", () => this.saveEditedWeight(row_id));
             const cancel_btn = createActionBtn("Cancel", "cancel-action-btn-editing", () => this.stopEditingRecord(row_id));
             const weight_td = record_tr.querySelector("td.table-weight-td");
             const weight_p = record_tr.querySelector("p.table-weight-p");
@@ -133,13 +133,20 @@ export class WeightTable {
         }
     }
     // API call to update the record weight
-    saveEditedWeight(row_id, new_weight) {
+    saveEditedWeight(row_id) {
+        const weightTable = document.getElementById("weight-table");
+        const record_tr = weightTable === null || weightTable === void 0 ? void 0 : weightTable.querySelector(`#tr-${row_id.toFixed(0)}`);
+        const input_field = record_tr === null || record_tr === void 0 ? void 0 : record_tr.querySelector("input.input-editing");
+        const new_weight = parseFloat(input_field.value);
         console.log(`Save edited weight of row_id ${row_id} - ${new_weight}`);
         updateRecord(row_id, new_weight);
+        const detail = { "id": this.rowsData[row_id].id, "new_weight": new_weight };
+        const event = new CustomEvent("updateWeightRecord", { detail: detail });
+        window.dispatchEvent(event);
         this.stopEditingRecord(row_id);
     }
     deleteRecord(index) {
-        const event = new CustomEvent("deleteWeightRecord", { detail: index });
+        const event = new CustomEvent("deleteWeightRecord", { detail: this.rowsData[index].id });
         window.dispatchEvent(event);
     }
 }
