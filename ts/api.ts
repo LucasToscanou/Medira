@@ -1,10 +1,18 @@
-export function generateFloatArray(size: number, min: number, max: number): { weight: number, date: Date }[] {
-    return Array.from({ length: size }, () => ({
-        weight: Math.random() * (max - min) + min,
-        date: new Date(Date.now() - Math.floor(Math.random() * 10000000000)) // Random date within the last ~115 days
+async function loadSampleWeights(): Promise<{ id: number, weight: number, date: Date }[]> {
+    const response = await fetch('../js/data/sampleWeights.json');
+    const data = await response.json();
+    // Convert the date strings to Date objects
+    return data.map((entry: { id: number, weight: number, date: string }) => ({
+        ...entry,
+        date: new Date(entry.date)
     }));
-};
+}
 
+export async function fetchRecords(){
+    const data = await loadSampleWeights();
+
+    return data; 
+}
 
 export function addRecord(record: { weight: number, date: Date }) {
     console.log(`API: addRecord ${record}`);

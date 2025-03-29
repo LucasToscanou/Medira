@@ -24,7 +24,7 @@ export class weightInput {
         if (!isNaN(weight)) {
             const newRecord = { weight, date: new Date() };
             // Dispatch a custom event with the new weight record
-            const event = new CustomEvent("newWeightAdded", { detail: newRecord });
+            const event = new CustomEvent("addWeightRecord", { detail: newRecord });
             window.dispatchEvent(event);
             console.log(`Dispatched event for new weight: ${weight}`);
         }

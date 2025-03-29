@@ -4,11 +4,11 @@ import { createActionBtn } from "./editBtns.js";
 export class weightInput {
     public final_div : HTMLDivElement;
 
-    constructor(latestWeighHistoryValue: { weight: number, date: Date } ){
+    constructor(latestWeighHistoryValue: { id: number, weight: number, date: Date } ){
         this.final_div = this.setup(latestWeighHistoryValue);
     }
 
-    private setup(default_weight:{ weight: number, date: Date } ) : HTMLDivElement{
+    private setup(default_weight:{ id: number, weight: number, date: Date } ) : HTMLDivElement{
         const div = document.createElement("div");
         const input_field = document.createElement("input")
         const save_btn = createActionBtn("save", "weight-input-save", () => this.addNewWeight(input_field.value));
@@ -35,8 +35,9 @@ export class weightInput {
             const newRecord = { weight, date: new Date() };
 
             // Dispatch a custom event with the new weight record
-            const event = new CustomEvent("newWeightAdded", { detail: newRecord });
+            const event = new CustomEvent("addWeightRecord", { detail: newRecord });
             window.dispatchEvent(event);
+
 
             console.log(`Dispatched event for new weight: ${weight}`);
         } else {

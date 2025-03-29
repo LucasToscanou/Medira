@@ -1,26 +1,76 @@
-import { generateFloatArray } from './api.js';
 import { WeightTable } from './weightTable.js'
 import { weightInput } from './weightInput.js'
+import { fetchRecords, addRecord, dropRecord, updateRecord } from "./api.js";
 
+class Main {
+    private weightHistoryData!: { id: number, weight: number, date: Date }[];
+    private body: HTMLBodyElement;
+    private tableContainer!: HTMLDivElement;
+    
+    constructor() {
+        this.body = document.getElementsByTagName("body")[0];
+        const tableElement = <HTMLDivElement>document.getElementById('table-container');
+        this.tableContainer = tableElement;
+        
+        this.initialize();
+    }
+    
+    private async initialize() {
+        await this.getWeighHistoryData();
+        this.createWeightInput();
+        this.createWeightHistoryTable();
+        this.setEventListeners();
+    }
 
-function main(){
-    let sampleWeights: { weight: number, date: Date }[] = generateFloatArray(10, 90, 115).sort((a, b) => b.date.getTime() - a.date.getTime());
-    
-    const body = document.getElementsByTagName("body")[0];
-    const weightInputContainer = document.getElementById('weight-input-container');
-    const tableContainer = document.getElementById('table-container');
-    
-    const weightInputInstance = new weightInput(sampleWeights[0]);
-    if (weightInputInstance) {
-        if (body && weightInputContainer) {
-            body.replaceChild(weightInputInstance.final_div, weightInputContainer);
+    private setEventListeners() {
+        window.addEventListener("addWeightRecord", async (event: Event) => {
+            const customEvent = event as CustomEvent;
+            
+            // API call
+            addRecord(customEvent.detail);
+            await this.refreshTable();
+            console.log(this.weightHistoryData);
+        });
+
+        window.addEventListener("refreshTable", async (event: Event) => {
+            await this.refreshTable();
+        });
+    }
+
+    private createWeightInput() {
+        const weightInputContainer = document.getElementById('weight-input-container');
+        const weightInputInstance = new weightInput(this.weightHistoryData[0]);
+        if (weightInputInstance) {
+            if (this.body && weightInputContainer) {
+                this.body.replaceChild(weightInputInstance.final_div, weightInputContainer);
+            }
         }
     }
 
-    const weightHistoryTable = new WeightTable(sampleWeights);
-    if (weightHistoryTable) {
-        tableContainer?.appendChild(weightHistoryTable.table);
+    private createWeightHistoryTable() {
+        const weightHistoryTable = new WeightTable(this.weightHistoryData);
+        if (weightHistoryTable) {
+            this.tableContainer?.appendChild(weightHistoryTable.table);
+        }
     }
+
+
+    private async refreshTable(){
+        await this.getWeighHistoryData();
+        
+        const new_weightHistoryTable = new WeightTable(this.weightHistoryData);
+        if(this.tableContainer?.firstChild && new_weightHistoryTable){
+            this.tableContainer.replaceChild(new_weightHistoryTable.table, this.tableContainer.firstChild);
+        }
+    }
+
+
+    private async getWeighHistoryData() {
+        this.weightHistoryData = await fetchRecords();
+    }
+
 }
 
-main();
+
+
+const main = new Main();
